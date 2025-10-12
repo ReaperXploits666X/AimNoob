@@ -4,7 +4,7 @@ local b = Instance.new("TextButton", g)
 g.Name = "ILMOD"
 b.Size = UDim2.new(0, 200, 0, 40)
 b.Position = UDim2.new(0.5, -100, 0.85, 0)
-b.Text = "Infinite Life MOD"
+b.Text = "Ativar Vida Infinita"
 b.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 b.TextColor3 = Color3.fromRGB(255, 255, 255)
 b.Font = Enum.Font.Fantasy
@@ -13,14 +13,9 @@ b.Active = true
 b.Draggable = true
 
 local ativo = false
+local loopRodando = false
 
-b.MouseButton1Click:Connect(function()
-	if ativo then return end
-	ativo = true
-	b.Text = "Vida Infinita Ativada"
-	b.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-	b.TextColor3 = Color3.fromRGB(0, 0, 0)
-
+local function aplicarVida()
 	while ativo do
 		local c = p.Character or p.CharacterAdded:Wait()
 		local h = c:FindFirstChildOfClass("Humanoid")
@@ -29,5 +24,25 @@ b.MouseButton1Click:Connect(function()
 			h.Health = math.huge
 		end
 		wait(0.1)
+	end
+end
+
+b.MouseButton1Click:Connect(function()
+	ativo = not ativo
+	if ativo then
+		b.Text = "Desativar Vida Infinita"
+		b.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+		b.TextColor3 = Color3.fromRGB(0, 0, 0)
+		if not loopRodando then
+			loopRodando = true
+			p.CharacterAdded:Connect(function()
+				if ativo then aplicarVida() end
+			end)
+			aplicarVida()
+		end
+	else
+		b.Text = "Ativar Vida Infinita"
+		b.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+		b.TextColor3 = Color3.fromRGB(255, 255, 255)
 	end
 end)
