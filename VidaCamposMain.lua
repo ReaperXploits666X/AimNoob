@@ -1,55 +1,62 @@
 local p = game.Players.LocalPlayer
 
-local function criarEfeitoVisual()
+local function criarCoroaContador()
 	local char = p.Character or p.CharacterAdded:Wait()
 	local head = char:WaitForChild("Head")
 
-	-- Coroa física visível
-	local coroa = Instance.new("Part")
-	coroa.Name = "CoroaRei"
-	coroa.Size = Vector3.new(2, 1, 2)
-	coroa.Anchored = false
-	coroa.CanCollide = false
-	coroa.Transparency = 0
-	coroa.BrickColor = BrickColor.new("Bright yellow")
-	coroa.Material = Enum.Material.Neon
-	coroa.Shape = Enum.PartType.Ball
-	coroa.Parent = char
+	-- Billboard GUI visível para todos
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "CoroaContadorGlobal"
+	gui.Size = UDim2.new(0, 100, 0, 50)
+	gui.StudsOffset = Vector3.new(0, 3.5, 0)
+	gui.AlwaysOnTop = true
+	gui.Parent = head
 
-	local weld = Instance.new("WeldConstraint", coroa)
-	weld.Part0 = coroa
-	weld.Part1 = head
-	coroa.Position = head.Position + Vector3.new(0, 2.5, 0)
+	-- Ícone da coroa
+	local coroa = Instance.new("ImageLabel", gui)
+	coroa.Size = UDim2.new(0, 40, 1, 0)
+	coroa.Position = UDim2.new(0, 0, 0, 0)
+	coroa.BackgroundTransparency = 1
+	coroa.Image = "rbxassetid://7483871524" -- Ícone de coroa dourada
 
-	-- Luz dourada visível
-	local luz = Instance.new("PointLight", coroa)
-	luz.Color = Color3.new(1, 1, 0)
-	luz.Range = 10
-	luz.Brightness = 5
+	-- Texto do contador
+	local contador = Instance.new("TextLabel", gui)
+	contador.Size = UDim2.new(0, 60, 1, 0)
+	contador.Position = UDim2.new(0, 40, 0, 0)
+	contador.BackgroundTransparency = 1
+	contador.TextColor3 = Color3.fromRGB(255, 215, 0)
+	contador.Font = Enum.Font.Fantasy
+	contador.TextSize = 24
+	contador.Text = "0"
 
-	-- Aura em volta do corpo
-	for _, parte in pairs(char:GetChildren()) do
-		if parte:IsA("BasePart") then
-			local aura = Instance.new("ParticleEmitter", parte)
-			aura.Name = "AuraRei"
-			aura.Texture = "rbxassetid://243098098" -- textura de brilho
-			aura.Color = ColorSequence.new(Color3.new(1, 1, 0))
-			aura.LightEmission = 1
-			aura.Size = NumberSequence.new(0.5)
-			aura.Rate = 10
-			aura.Speed = NumberRange.new(0)
-			aura.LockedToPart = true
+	local kills = 0
+	local mortos = {}
+
+	-- Detecta mortes e atualiza contador
+	game:GetService("RunService").Heartbeat:Connect(function()
+		for _, jogador in pairs(game.Players:GetPlayers()) do
+			if jogador ~= p and not mortos[jogador] then
+				local char = jogador.Character
+				if char then
+					local h = char:FindFirstChildOfClass("Humanoid")
+					if h and h.Health <= 0 then
+						mortos[jogador] = true
+						kills += 1
+						contador.Text = tostring(kills)
+					end
+				end
+			end
 		end
-	end
+	end)
 end
 
 -- Ativa ao entrar no jogo
 p.CharacterAdded:Connect(function()
 	wait(1)
-	criarEfeitoVisual()
+	criarCoroaContador()
 end)
 
 -- Ativa se já estiver com personagem carregado
 if p.Character then
-	criarEfeitoVisual()
+	criarCoroaContador()
 end
