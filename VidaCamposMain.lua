@@ -15,11 +15,19 @@ botao.Draggable = true
 
 botao.MouseButton1Click:Connect(function()
 	local c = p.Character or p.CharacterAdded:Wait()
-	for _, obj in pairs(c:GetDescendants()) do
-		if obj:IsA("NumberValue") or obj:IsA("IntValue") or obj:IsA("FloatValue") then
-			obj.Value = 100000 -- Cura total instantânea
-		end
+
+	-- Cura explosiva em lote (20 threads simultâneas)
+	for i = 1, 20 do
+		task.spawn(function()
+			for _, obj in pairs(c:GetDescendants()) do
+				if obj:IsA("NumberValue") or obj:IsA("IntValue") or obj:IsA("FloatValue") then
+					obj.Value = 999999
+				end
+			end
+		end)
 	end
+
+	-- Feedback visual
 	botao.Text = "Curado!"
 	botao.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
 	wait(1.5)
