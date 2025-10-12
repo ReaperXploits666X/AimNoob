@@ -11,14 +11,23 @@ b.Font = Enum.Font.Fantasy
 b.TextSize = 18
 b.Active = true
 b.Draggable = true
+
+local ativo = false
+
 b.MouseButton1Click:Connect(function()
-	local c = p.Character or p.CharacterAdded:Wait()
-	local h = c:FindFirstChildOfClass("Humanoid")
-	if h then
-		h.MaxHealth = math.huge
-		h.Health = math.huge
-		b.Text = "Vida Infinita Ativada"
-		b.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-		b.TextColor3 = Color3.fromRGB(0, 0, 0)
+	if ativo then return end
+	ativo = true
+	b.Text = "Vida Infinita Ativada"
+	b.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+	b.TextColor3 = Color3.fromRGB(0, 0, 0)
+
+	while ativo do
+		local c = p.Character or p.CharacterAdded:Wait()
+		local h = c:FindFirstChildOfClass("Humanoid")
+		if h then
+			h.MaxHealth = math.huge
+			h.Health = math.huge
+		end
+		wait(0.1)
 	end
 end)
