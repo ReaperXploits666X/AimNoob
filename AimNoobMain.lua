@@ -1,4 +1,4 @@
-local Players = game:GetService("Players")
+local Players = game:GetService("Players"
 local RunService = game:GetService("RunService")
 local lp = Players.LocalPlayer
 local mouse = lp:GetMouse()
