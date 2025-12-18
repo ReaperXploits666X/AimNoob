@@ -12,31 +12,33 @@ button.TextColor3 = Color3.new(1, 1, 1)
 button.Font = Enum.Font.GothamBold
 button.TextSize = 18
 button.Active = true
-button.Draggable = false -- vamos usar nosso próprio sistema de arrastar
+button.AutoButtonColor = true
 
--- Função para regenerar vida
+-- Regenerar vida ao clicar
 button.MouseButton1Click:Connect(function()
 	local character = player.Character or player.CharacterAdded:Wait()
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local humanoid = character:FindFirstChildWhichIsA("Humanoid")
 	if humanoid then
 		humanoid.Health = humanoid.MaxHealth
 	end
 end)
 
--- Sistema de arrastar o botão
-button.MouseButton1Down:Connect(function(x, y)
+-- Sistema de arrastar
+local UIS = game:GetService("UserInputService")
+
+button.MouseButton1Down:Connect(function(input)
 	dragging = true
-	offset = Vector2.new(x, y) - button.AbsolutePosition
+	offset = Vector2.new(input.Position.X - button.AbsolutePosition.X, input.Position.Y - button.AbsolutePosition.Y)
 end)
 
-game:GetService("UserInputService").InputChanged:Connect(function(input)
+UIS.InputChanged:Connect(function(input)
 	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 		local newPos = input.Position - offset
 		button.Position = UDim2.new(0, newPos.X, 0, newPos.Y)
 	end
 end)
 
-game:GetService("UserInputService").InputEnded:Connect(function(input)
+UIS.InputEnded:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = false
 	end
